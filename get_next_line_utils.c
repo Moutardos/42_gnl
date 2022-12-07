@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:50:33 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/07 16:02:43 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/07 17:32:37 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,3 +80,14 @@ char	*ft_strchr(const char *s, int c)
 	}
 	return (NULL);
 }
+
+void	print_lst(t_list *lst)
+{
+	while (lst)
+	{
+		printf("%s->", (char*) lst->content);
+		lst = lst->next;
+	}
+	printf("NULL\n");
+}
+ 

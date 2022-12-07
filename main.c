@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:37:18 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/04 09:48:25 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/07 17:39:30 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,9 @@
 int	main(int ac, char **av)
 {
 	char	*buf;
-	int fd=open("filename",O_RDWR, 0644);
+	int fd=open("allo",O_RDWR);
 	buf = get_next_line(fd);
-	printf("%s\n", buf);
-	buf = get_next_line(fd);
-	printf("%s\n", buf);
+	printf("%s", buf);
+
 	return (0);
 }

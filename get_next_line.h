@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:19 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/07 16:07:57 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/07 17:21:25 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,4 +46,5 @@ t_list	*ft_lstnew(void *content);
 void	ft_lstclear(t_list **lst, void (*del)(void *));
 void	ft_lstadd_back(t_list **lst, t_list *new);
 char	*ft_strchr(const char *s, int c);
+void    print_lst(t_list *lst);
 #endif
