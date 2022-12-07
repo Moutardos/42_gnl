@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:19 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/04 08:53:24 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/07 16:07:57 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,25 @@
 # include <stdint.h>
 # include <stdlib.h>
 # include <stdio.h>
+
+
+typedef struct s_list
+{
+	void			*content;
+	struct s_list	*next;
+}	t_list;
+
 /* return the next line in the fd file */
 char	*get_next_line(int fd);
+char	*malloc_line(t_list *filedata);
+char    *extract_line(char * line);
+int		fill_lst(t_list **filedata, int fd);
+size_t	ft_strlcat(char *dst, const char *src, size_t size);
 
-/* concatenate two string*/
-char	*ft_strjoin(const char *s1, const char *s2);
-
-/* duplicate a string*/
-char	*ft_strdup(const char *s);
-static size_t	ft_strlen(const char *s);
-static size_t	ft_strlcat(char *dst, const char *src, size_t size);
-/* merg buf into megabuf, return the index where it met \n or eof */
-int	check_end(char *buf, char **megabuf);
-
-char	*cutalloc(char *megabuf, size_t i);
+/** UTILS **/
+size_t  ft_strlen(const char *s);  
+t_list	*ft_lstnew(void *content);
+void	ft_lstclear(t_list **lst, void (*del)(void *));
+void	ft_lstadd_back(t_list **lst, t_list *new);
+char	*ft_strchr(const char *s, int c);
 #endif
