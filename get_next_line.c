@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:27 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/08 23:34:03 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/09 00:50:01 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ char	*get_next_line(int fd)
 	if (line == NULL)
 		return (NULL);
 	get_line(line, &filedata);
+	//printf("RESULLTATT:::: %s", line);
 	return (line);
 }
 
@@ -38,7 +39,8 @@ char	*malloc_line(t_list **filedata)
 {
 	size_t	res_len;
 	t_list	*curr;
-	
+	char	*res;
+
 	res_len = 0;
 	curr = *filedata;
 	while(curr)
@@ -52,12 +54,12 @@ char	*malloc_line(t_list **filedata)
 		}
 		curr = curr->next;
 	}
-	if (res_len == 0)
-	{
-		free(curr);
+	res = malloc(res_len + 1);
+	if (res == NULL)
 		return (NULL);
-	}
-	return (malloc(res_len + 1));
+	while (res_len + 1)
+		res[res_len--] = '\0';
+	return (res);
 }
 
 int		fill_lst(t_list **filedata, int fd)
@@ -127,18 +129,30 @@ void	get_line(char *line, t_list **filedata)
 	while(*filedata)
 	{
 		node = (*filedata);
+		//printf("!treating %s!", node->content);
 		if (ft_strchr(node->content, '\n') != NULL)
 		{
 			eol = ft_strchr(node->content , '\n') - node->content + 1;
+			//printf("!EOL : %d DANS %s\n", eol, node->content);
 			size += eol;
-			ft_strlcat(line, node->content, size + 1);
-			i = -1;
-			while (node->content[++i + eol])
-				node->content[i] = node->content[i + eol];
-			node->content[i] = '\0';
+			ft_strlcat(line, node->content, size + 2);
+			if (eol < BUFFER_SIZE)
+			{
+				i = -1;
+				while (node->content[++i + eol])
+					node->content[i] = node->content[i + eol];
+				node->content[i] = '\0';
+			}
+			else
+			{
+				*filedata = node->next;
+				free(node);
+			}
 			return ;
+			
 		}
 		size += ft_strlen(node->content);
+		//printf("size %s %d", node->content, size + 1);
 		ft_strlcat(line, node->content, size + 1);
 		*filedata = node->next;
 		free(node);
