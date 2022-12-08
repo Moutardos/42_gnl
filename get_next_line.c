@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:27 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/08 16:52:30 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/08 23:34:03 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,52 +19,43 @@ char	*get_next_line(int fd)
 {
 	static t_list	*filedata = NULL;
 	char			*line;
-	char			*data;
-	size_t			size;
 
 	if (!fill_lst(&filedata, fd))
 		return (NULL);
+	if (filedata == NULL)
+		return (NULL);
 	if (fd < 0)
 		return (NULL);
-	line = malloc_line(filedata);
+	line = malloc_line(&filedata);
 	if (line == NULL)
 		return (NULL);
-	size = 0;
-	while(filedata)
-	{
-		data = (char *) (filedata)->content;
-		if (ft_strchr(data, '\n') != NULL)
-		{
-			size += ft_strchr(data , '\n') - data + 1;
-			ft_strlcat(line, data, size + 1);
-			filedata->content += ft_strchr(data , '\n') - data + 1;
-			break ;
-		}
-		size += ft_strlen(data);
-		ft_strlcat(line, data, size + 1);
-		filedata = filedata->next;
-	}
+	get_line(line, &filedata);
 	return (line);
 }
 
 
-char	*malloc_line(t_list *filedata)
+char	*malloc_line(t_list **filedata)
 {
 	size_t	res_len;
-	char	*data;
-
+	t_list	*curr;
+	
 	res_len = 0;
-	while(filedata != NULL)
+	curr = *filedata;
+	while(curr)
 	{
-		data = (char *) filedata->content;
-		if (ft_strchr(data, '\n') == NULL)
-			res_len += ft_strlen(data);
+		if (ft_strchr(curr->content, '\n') == NULL)
+			res_len += ft_strlen(curr->content);
 		else
 		{
-			res_len += ft_strchr(data, '\n') - data + 1;
+			res_len += ft_strchr(curr->content, '\n') - curr->content + 1;
 			break;
 		}
-		filedata = filedata->next;
+		curr = curr->next;
+	}
+	if (res_len == 0)
+	{
+		free(curr);
+		return (NULL);
 	}
 	return (malloc(res_len + 1));
 }
@@ -81,10 +72,15 @@ int		fill_lst(t_list **filedata, int fd)
 	while (n > 0)
 	{
 		buf[n] = '\0';
-		node = ft_lstnew(ft_strdup(buf));
+		node = ft_lstnew(buf);
 		if (node == NULL)
 		{
-			ft_lstclear(filedata, free);
+			while (*filedata)
+			{
+				node = (*filedata)->next;
+				free(*filedata);
+				*filedata = node;
+			}
 			return (0);
 		}
 		ft_lstadd_back(filedata, node);
@@ -120,26 +116,31 @@ size_t	ft_strlcat(char *dst, const char *src, size_t size)
 	return ((i - j) + ft_strlen(src));
 }
 
-char	*ft_strdup(const char *s)
+void	get_line(char *line, t_list **filedata)
 {
-	char	*s_dup;
-	size_t	size;
 	size_t	i;
+	size_t	size;
+	size_t	eol;
+	t_list	*node;
 
-	if (s == NULL)
-		return (NULL);
-	size = ft_strlen(s);
-	if (size >= SIZE_MAX)
-		return (NULL);
-	s_dup = malloc(size + 1);
-	if (s_dup == NULL)
-		return (NULL);
-	i = 0;
-	while (i < size)
+	size = 0;
+	while(*filedata)
 	{
-		s_dup[i] = s[i];
-		i++;
+		node = (*filedata);
+		if (ft_strchr(node->content, '\n') != NULL)
+		{
+			eol = ft_strchr(node->content , '\n') - node->content + 1;
+			size += eol;
+			ft_strlcat(line, node->content, size + 1);
+			i = -1;
+			while (node->content[++i + eol])
+				node->content[i] = node->content[i + eol];
+			node->content[i] = '\0';
+			return ;
+		}
+		size += ft_strlen(node->content);
+		ft_strlcat(line, node->content, size + 1);
+		*filedata = node->next;
+		free(node);
 	}
-	s_dup[i] = '\0';
-	return (s_dup);
 }
