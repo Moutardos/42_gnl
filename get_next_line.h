@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:19 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/07 17:21:25 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/07 21:03:26 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,9 @@ typedef struct s_list
 /* return the next line in the fd file */
 char	*get_next_line(int fd);
 char	*malloc_line(t_list *filedata);
-char    *extract_line(char * line);
 int		fill_lst(t_list **filedata, int fd);
 size_t	ft_strlcat(char *dst, const char *src, size_t size);
-
+char	*ft_strdup(const char *s);
 /** UTILS **/
 size_t  ft_strlen(const char *s);  
 t_list	*ft_lstnew(void *content);

@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:27 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/07 17:42:26 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/08 16:52:30 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ char	*get_next_line(int fd)
 
 	if (!fill_lst(&filedata, fd))
 		return (NULL);
-	print_lst(filedata);
+	if (fd < 0)
+		return (NULL);
 	line = malloc_line(filedata);
 	if (line == NULL)
 		return (NULL);
@@ -34,7 +35,7 @@ char	*get_next_line(int fd)
 		data = (char *) (filedata)->content;
 		if (ft_strchr(data, '\n') != NULL)
 		{
-			size += ft_strchr(data , '\n') - data;
+			size += ft_strchr(data , '\n') - data + 1;
 			ft_strlcat(line, data, size + 1);
 			filedata->content += ft_strchr(data , '\n') - data + 1;
 			break ;
@@ -56,7 +57,6 @@ char	*malloc_line(t_list *filedata)
 	while(filedata != NULL)
 	{
 		data = (char *) filedata->content;
-				printf("%s dataing\n", data);
 		if (ft_strchr(data, '\n') == NULL)
 			res_len += ft_strlen(data);
 		else
@@ -66,35 +66,29 @@ char	*malloc_line(t_list *filedata)
 		}
 		filedata = filedata->next;
 	}
-	printf("res_len : %lu\n", res_len + 1);
 	return (malloc(res_len + 1));
 }
 
 int		fill_lst(t_list **filedata, int fd)
 {
-	char	buf[BUFFER_SIZE];
+	char	buf[BUFFER_SIZE + 1];
 	t_list	*node;
-
-	if (*filedata == NULL)
+	size_t	n;
+	
+	if (*filedata != NULL)
+		return (1);
+	n = read(fd, buf, BUFFER_SIZE);
+	while (n > 0)
 	{
-		if (read(fd, buf, BUFFER_SIZE) < 0)
-			return (0);
-		node = ft_lstnew(ft_strdup(buf));
-		if (node == NULL)
-			return (0);
-		ft_lstadd_back(filedata, node);
-		printf("readed[%d] %s alias\n", BUFFER_SIZE, (*filedata)->content);
-	}
-	while (read(fd, buf, BUFFER_SIZE) > 0)
-	{
+		buf[n] = '\0';
 		node = ft_lstnew(ft_strdup(buf));
 		if (node == NULL)
 		{
-			ft_lstclear(filedata, malloc);
+			ft_lstclear(filedata, free);
 			return (0);
 		}
 		ft_lstadd_back(filedata, node);
-		printf("readed :%s\n", (*filedata)->content);
+		n = read(fd, buf, BUFFER_SIZE);
 	}
 	return (1);
 }
