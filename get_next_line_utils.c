@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:50:33 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/08 22:22:50 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/09 20:17:14 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ int	get_new_fd(int fd, t_fd **fdinfo)
 		return (0);
 	node->fd = fd;
 	node->next = *fdinfo;
+	*fdinfo = node;
 	return (1);
 }
 
@@ -75,7 +76,8 @@ void	free_line(t_line **line)
 	}
 	*line = NULL;
 }
-size_t	ft_strchr(const char *s, int c)
+
+ssize_t	ft_strchr(const char *s, int c)
 {
 	size_t	i;
 
@@ -89,12 +91,50 @@ size_t	ft_strchr(const char *s, int c)
 	return (-1);
 }
 
-void	print_lst(t_list *lst)
+void	fill_reste(t_fd *fdinfo, t_line *line)
 {
+	ssize_t	offset;
+	size_t	i;
+
+	i = 0;
+	offset = ft_strchr(line->buf, '\n');
+	if (offset == -1)
+		while (fdinfo->reste[i])
+			fdinfo->reste[i++] = '\0';
+	else
+	{
+		while (line->buf[offset + i + 1])
+		{
+			fdinfo->reste[i] = line->buf[offset + i + 1];
+			i++;
+		}
+		while(fdinfo->reste[i])
+			fdinfo->reste[i++] = '\0';
+	}
+
+}
+
+void	print_line(t_line *lst)
+{
+	size_t	i;
+	size_t	n;
+
+	i = 1;
 	while (lst)
 	{
-		printf("%s->", (char*) lst->content);
+		printf("ligne %lu : ", i);
+		n = 0;
+		while(n < BUFFER_SIZE)
+		{
+			if (lst->buf[n] == '\n')
+				write(1, "\\n",2);
+			else
+				write(1, lst->buf + n, 1);
+			n++;
+		}
 		lst = lst->next;
+		i++;
+		printf("\n");
 	}
 	printf("NULL\n");
 }
