@@ -6,79 +6,87 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:50:33 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/07 17:32:37 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/08 22:22:50 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_strlen(const char *s)
+int	get_new_fd(int fd, t_fd **fdinfo)
 {
-	size_t	size;
+	t_fd	*node;
 
-	size = 0;
-	while (s[size])
-		size++;
-	return (size);
-}
-
-t_list	*ft_lstnew(void *content)
-{
-	t_list	*new;
-
-	new = malloc(sizeof(t_list));
-	if (new == NULL)
-		return (NULL);
-	new->content = content;
-	new->next = NULL;
-	return (new);
-}
-
-void	ft_lstclear(t_list **lst, void (*del)(void *))
-{
-	t_list	*next;
-
-	while (*lst != NULL)
+	node = *fdinfo;
+	while(node)
 	{
-		next = (*lst)->next;
-		del((*lst)->content);
-		if (lst != NULL)
-			free(lst);
-		*lst = next;
+		if (node->fd == fd)
+			return (1);
+		node = node->next;
 	}
+	node = malloc(sizeof(t_fd *));
+	if (!node)
+		return (0);
+	node->fd = fd;
+	node->next = *fdinfo;
+	return (1);
 }
 
-void	ft_lstadd_back(t_list **lst, t_list *new)
+void	free_fd(int fd, t_fd **fd_info)
 {
-	t_list	*current;
-
-	if (lst == NULL || *lst == NULL)
+	t_fd	*curr;
+	t_fd	*node;
+	
+	curr = *fd_info;
+	if (curr->fd == fd)
 	{
-		*lst = new;
+		node = curr->next;
+		free(curr);
+		*fd_info = node;
 		return ;
 	}
-	current = *lst;
-	while (current->next)
+	node = curr;
+	curr = curr->next;
+	while(curr)
 	{
-		current = current->next;
+		if (curr->fd == fd)
+		{
+			node->next = curr->next;
+			free(curr);
+			return ;
+		}
+		curr = curr->next;
+		node = node->next;
 	}
-	current->next = new;
 }
 
-char	*ft_strchr(const char *s, int c)
+void	free_line(t_line **line)
+{
+	t_line	*node;
+	t_line	*curr;
+
+	if (*line == NULL)
+		return ;
+	curr = *line;
+	while (curr)
+	{
+		node = curr->next;
+		free(curr);
+		curr = node;
+	}
+	*line = NULL;
+}
+size_t	ft_strchr(const char *s, int c)
 {
 	size_t	i;
-	size_t	size;
 
 	i = 0;
-	size = ft_strlen(s);
-	while (i <= size)
+	while (s[i])
 	{
 		if (s[i] == (unsigned char)c)
-			return ((char *)s + i);
+			return (i);
 		i++;
 	}
-	return (NULL);
+	return (-1);
 }
 
 void	print_lst(t_list *lst)

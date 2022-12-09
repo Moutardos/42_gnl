@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:27 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/08 16:52:30 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/08 21:22:41 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,26 +17,27 @@
 
 char	*get_next_line(int fd)
 {
-	static t_list	*filedata = NULL;
+	static t_fd	*filedata = NULL;
 	char			*line;
-	char			*data;
+	t_list			*node;
 	size_t			size;
 
-	if (!fill_lst(&filedata, fd))
-		return (NULL);
 	if (fd < 0)
 		return (NULL);
+	if (!get_new_fd(fd, &filedata))
+		return (NULL);
+	
 	line = malloc_line(filedata);
 	if (line == NULL)
 		return (NULL);
 	size = 0;
 	while(filedata)
 	{
-		data = (char *) (filedata)->content;
-		if (ft_strchr(data, '\n') != NULL)
+		node = filedata;
+		if (ft_strchr(node->content, '\n') != NULL)
 		{
-			size += ft_strchr(data , '\n') - data + 1;
-			ft_strlcat(line, data, size + 1);
+			size += ft_strchr(node->content , '\n') - node->content + 1;
+			ft_strlcat(line, node->content, size + 1);
 			filedata->content += ft_strchr(data , '\n') - data + 1;
 			break ;
 		}
@@ -51,12 +52,12 @@ char	*get_next_line(int fd)
 char	*malloc_line(t_list *filedata)
 {
 	size_t	res_len;
-	char	*data;
+	t_list	*node;
 
 	res_len = 0;
 	while(filedata != NULL)
 	{
-		data = (char *) filedata->content;
+		node = (char *) filedata->content;
 		if (ft_strchr(data, '\n') == NULL)
 			res_len += ft_strlen(data);
 		else
@@ -64,8 +65,12 @@ char	*malloc_line(t_list *filedata)
 			res_len += ft_strchr(data, '\n') - data + 1;
 			break;
 		}
+		
 		filedata = filedata->next;
 	}
+	if (res_len == 0)
+		return (NULL);
+	//printf("size : %d\n", res_len + 1);
 	return (malloc(res_len + 1));
 }
 
@@ -78,6 +83,8 @@ int		fill_lst(t_list **filedata, int fd)
 	if (*filedata != NULL)
 		return (1);
 	n = read(fd, buf, BUFFER_SIZE);
+	if (n < 0)
+		return (0);
 	while (n > 0)
 	{
 		buf[n] = '\0';
