@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:50:33 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/09 20:17:14 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/10 17:23:43 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,14 @@ int	get_new_fd(int fd, t_fd **fdinfo)
 			return (1);
 		node = node->next;
 	}
-	node = malloc(sizeof(t_fd *));
+	node = malloc(sizeof(t_fd ));
 	if (!node)
 		return (0);
 	node->fd = fd;
-	node->next = *fdinfo;
+	if (!*fdinfo)
+		node->next = NULL;
+	else
+		node->next = *fdinfo;
 	*fdinfo = node;
 	return (1);
 }
@@ -122,7 +125,6 @@ void	print_line(t_line *lst)
 	i = 1;
 	while (lst)
 	{
-		printf("ligne %lu : ", i);
 		n = 0;
 		while(n < BUFFER_SIZE)
 		{

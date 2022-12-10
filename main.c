@@ -6,13 +6,13 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:37:18 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/09 18:20:46 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/10 17:23:12 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "stdio.h"
-       #include <fcntl.h>
+#include <fcntl.h>
 
 
 int	test(t_fd *fdinfo)
@@ -24,19 +24,15 @@ int	test(t_fd *fdinfo)
 	printf("%s\n", fdinfo->lines->buf);
 	return (0);
 }
+
+// #include "get_next_line_utils.c"
+// #include "get_next_line.c"
 int	main(int ac, char **av)
 {
 	char	*buf;
 	t_fd 	*fdinfo;
-	
-	if (!get_new_fd(0,&fdinfo))
-	{
-		return (0);
-	}
-	fdinfo->lines = malloc(sizeof(t_line));
-	
-	test(fdinfo);
-	test(fdinfo);
+		
+	get_next_line(0);
 	// int fd=open("allo",O_RDWR);
 	// buf = get_next_line(fd);
 	// printf("first line :%s", buf);

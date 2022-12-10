@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:27 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/09 20:16:16 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/10 17:23:01 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,23 @@
 #include <stdlib.h>
 
 
-
 char	*get_next_line(int fd)
 {
-	// static t_fd		*filedata = NULL;
-	// char			*line;
-	// t_list			*node;
-	// size_t			size;
+	static t_fd		*fdinfo = NULL;
+	t_line			*lines;
+	char			*res;
+	ssize_t			size;
 
-	// if (fd < 0)
-	// 	return (NULL);
-	// if (!get_new_fd(fd, &filedata))
-	// 	return (NULL);
+	if (fd < 0)
+		return (NULL);
+	if (!get_new_fd(fd, &fdinfo))
+		return (NULL);
 	
-	// line = malloc_line(filedata);
-	// if (line == NULL)
-	// 	return (NULL);
-	// size = 0;
+	lines = fill_lines(fdinfo, &size);
+	if (lines == NULL)
+		return (NULL);
+	print_line(lines);
+	
 	// while(filedata)
 	// {
 	// 	node = filedata;
@@ -45,7 +45,7 @@ char	*get_next_line(int fd)
 	// 	ft_strlcat(line, data, size + 1);
 	// 	filedata = filedata->next;
 	// }
-	// return (line);
+	return (NULL);
 }
 
 t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize)
@@ -72,9 +72,9 @@ t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize)
 	} 
 	i = 0;
 	if (ft_strchr(curr->buf, '\n') != -1)
-		*nsize -= (curr->size - ft_strchr(curr ->buf));
-	fill_reste(fdinfo, curr);
-	
+		*nsize -= (curr->size - ft_strchr(curr ->buf, '\n'));
+	//fill_reste(fdinfo, curr);
+	return (res);
 }
 
 t_line	*get_line(t_fd *fdinfo)
@@ -85,11 +85,10 @@ t_line	*get_line(t_fd *fdinfo)
 	res = malloc(sizeof(t_line));
 	if (!res)
 		return (NULL);
-	while (fd->reste[size])
-	{
-		res->buf[size] = fdinfo->reste[size];
-		size++;
-	}
+	size = -1;
+	if (fdinfo->reste[size + 1])
+		while (fdinfo->reste[++size])
+			res->buf[size] = fdinfo->reste[size];
 	else
 	{
 		size = read(fdinfo->fd, res->buf, BUFFER_SIZE);

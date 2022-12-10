@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:19 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/09 19:40:42 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/10 17:02:21 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ typedef struct s_fd
 
 /* return the next line in the fd file */
 char	*get_next_line(int fd);
+t_line	*get_line(t_fd *fdinfo);
+t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize);
 // char	*malloc_line(t_list *filedata);
 // int		fill_lst(t_list **filedata, int fd);
 size_t	ft_strlcat(char *dst, const char *src, size_t size);
@@ -58,4 +60,5 @@ void	free_line(t_line **line);
 // /* return index of where character c is found*/
 ssize_t	ft_strchr(const char *s, int c);
 void	print_line(t_line *lst);
+void	fill_reste(t_fd *fdinfo, t_line *line);
 #endif
