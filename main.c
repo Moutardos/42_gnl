@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:37:18 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/10 17:23:12 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/11 19:35:32 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,16 @@ int	main(int ac, char **av)
 {
 	char	*buf;
 	t_fd 	*fdinfo;
-		
-	get_next_line(0);
+	int		fd;
+	char *res;
+
+	fd = open("allo", O_RDWR);	
+
+	while((res = get_next_line(fd)) != NULL)
+	{
+		printf("'%s'",res);
+		free(res);
+	} 
 	// int fd=open("allo",O_RDWR);
 	// buf = get_next_line(fd);
 	// printf("first line :%s", buf);

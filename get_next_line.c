@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:27 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/10 17:23:01 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/11 19:48:07 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,28 @@ char	*get_next_line(int fd)
 	t_line			*lines;
 	char			*res;
 	ssize_t			size;
-
+	
 	if (fd < 0)
 		return (NULL);
 	if (!get_new_fd(fd, &fdinfo))
 		return (NULL);
 	
 	lines = fill_lines(fdinfo, &size);
-	if (lines == NULL)
+	if (size == 0)
+	{
+		free_line(&fdinfo->lines);
 		return (NULL);
-	print_line(lines);
-	
+	}
+	if (lines == NULL)
+	{
+		free_fd(fd, &fdinfo);
+		return (NULL);
+	}
+	//print_line(fdinfo->lines);
+	res = make_real_line(fdinfo, size);
+	printf("%ld\n", size);
+	print_line(fdinfo->lines);
+	free_line(&fdinfo->lines);
 	// while(filedata)
 	// {
 	// 	node = filedata;
@@ -45,7 +56,7 @@ char	*get_next_line(int fd)
 	// 	ft_strlcat(line, data, size + 1);
 	// 	filedata = filedata->next;
 	// }
-	return (NULL);
+	return (res);
 }
 
 t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize)
@@ -59,7 +70,7 @@ t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize)
 	if (!res)
 		return (NULL);
 	curr = res;
-	while (curr->size && !ft_strchr(curr->buf, '\n'))
+	while (curr->size && ft_strchr(curr->buf, '\n') == -1)
 	{
 		curr->next = get_line(fdinfo);
 		if (!curr->next)
@@ -70,10 +81,11 @@ t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize)
 		*nsize += curr->size;
 		curr = curr->next;
 	} 
+
 	i = 0;
-	if (ft_strchr(curr->buf, '\n') != -1)
-		*nsize -= (curr->size - ft_strchr(curr ->buf, '\n'));
-	//fill_reste(fdinfo, curr);
+	*nsize += curr->size;
+	fill_reste(fdinfo, curr);
+	fdinfo->lines = res;
 	return (res);
 }
 
@@ -88,7 +100,10 @@ t_line	*get_line(t_fd *fdinfo)
 	size = -1;
 	if (fdinfo->reste[size + 1])
 		while (fdinfo->reste[++size])
+		{
 			res->buf[size] = fdinfo->reste[size];
+			fdinfo->reste[size] = '\0';
+		}
 	else
 	{
 		size = read(fdinfo->fd, res->buf, BUFFER_SIZE);
@@ -97,12 +112,42 @@ t_line	*get_line(t_fd *fdinfo)
 			free(res);
 			return (NULL);
 		}
+		if (size == 0)
+		{
+			res->size = 0;
+			return (res);
+		}
 	}
 	res->buf[size] = '\0';
-	res->size = size;
+	if (ft_strchr(res->buf, '\n') != -1)
+		res->size = ft_strchr(res ->buf, '\n') + 1;
+	else
+		res->size = size;
 	return (res);
 }
 
+char	*make_real_line(t_fd *fdinfo, ssize_t size)
+{
+	char	*res;
+	t_line	*curr;
+	ssize_t	i;
+	ssize_t	len;
+	
+	curr = fdinfo->lines;
+	res = malloc(size + 1);
+	len = 0;
+	if (!res)
+		return (NULL);
+	while (curr)
+	{
+		i = -1;
+		while (++i < curr->size)
+			res[len++] = curr->buf[i];
+		curr = curr->next;
+	}
+	res[len] = '\0';
+	return (res);
+}
 // char	*malloc_line(t_list *filedata)
 // {
 // 	size_t	res_len;

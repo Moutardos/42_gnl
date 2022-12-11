@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:50:33 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/10 17:23:43 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/11 19:37:34 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,6 @@ void	fill_reste(t_fd *fdinfo, t_line *line)
 		while(fdinfo->reste[i])
 			fdinfo->reste[i++] = '\0';
 	}
-
 }
 
 void	print_line(t_line *lst)
@@ -126,7 +125,7 @@ void	print_line(t_line *lst)
 	while (lst)
 	{
 		n = 0;
-		while(n < BUFFER_SIZE)
+		while(n < lst->size)
 		{
 			if (lst->buf[n] == '\n')
 				write(1, "\\n",2);

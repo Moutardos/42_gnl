@@ -6,14 +6,14 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:19 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/10 17:02:21 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/11 19:42:51 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1000000
+#  define BUFFER_SIZE 1
 # endif
 # ifdef BUFFER_SIZE 
 #  if BUFFER_SIZE < 0
@@ -49,6 +49,7 @@ t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize);
 // int		fill_lst(t_list **filedata, int fd);
 size_t	ft_strlcat(char *dst, const char *src, size_t size);
 char	*ft_strdup(const char *s);
+char	*make_real_line(t_fd *fdinfo, ssize_t size);
 /** UTILS **/
 
 /* Actualise ou cree une nouvelle struct contenant la data du fd*/
