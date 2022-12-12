@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:27 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/12 00:24:52 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/12 19:09:57 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,17 @@
 
 char	*get_next_line(int fd)
 {
-	static t_fd		*fdinfo = NULL;
+	static t_fd		*fdinfos = NULL;
+	t_fd			*fdinfo;
 	char			*res;
 	ssize_t			size;
 	
+	fdinfo = NULL;
 	if (fd < 0)
 		return (NULL);
-	if (!get_new_fd(fd, &fdinfo))
+	fdinfo = get_new_fd(fd, &fdinfos);
+	if (!fdinfo)
 		return (NULL);
-	
 	fdinfo->lines = fill_lines(fdinfo, &size);
 	if (fdinfo->lines == NULL)
 	{
@@ -34,10 +36,9 @@ char	*get_next_line(int fd)
 	if (size == 0)
 	{
 		free_line(&fdinfo->lines);
-		free_fd(fd, &fdinfo);
+		free_fd(fd, &fdinfos);
 		return (NULL);
 	}
-	//print_line(fdinfo->lines);
 	res = make_real_line(fdinfo, size);
 	free_line(&fdinfo->lines);
 	// while(filedata)

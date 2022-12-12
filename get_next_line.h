@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:19 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/11 19:42:51 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/12 01:18:10 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,10 @@ typedef struct s_line
 
 typedef struct s_fd
 {
-	int		fd;
-	char	reste[BUFFER_SIZE + 1];
-	t_line	*lines;
+	int			fd;
+	struct s_fd	*first;
+	char		reste[BUFFER_SIZE + 1];
+	t_line		*lines;
 	struct s_fd	*next;
 }	t_fd;
 
@@ -53,7 +54,7 @@ char	*make_real_line(t_fd *fdinfo, ssize_t size);
 /** UTILS **/
 
 /* Actualise ou cree une nouvelle struct contenant la data du fd*/
-int	get_new_fd(int fd, t_fd **fdinfo);
+t_fd	*get_new_fd(int fd, t_fd **fdinfo);
 void	free_fd(int fd, t_fd **fdinfo);
 void	free_line(t_line **line);
 // void	ft_lstclear(t_list **lst, void (*del)(void *));
