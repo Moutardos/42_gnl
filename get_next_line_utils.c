@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:50:33 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/12 19:09:39 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/12 21:48:22 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ t_fd	*get_new_fd(int fd, t_fd **fdinfo)
 	if (!node)
 		return (NULL);
 	i = -1;
-	while(node->reste[++i])
-			node->reste[i] = '\0';
+	while (++i <= BUFFER_SIZE)
+		node->reste[i] = '\0';
 	node->fd = fd;
 	if (!*fdinfo)
 		node->next = NULL;
@@ -43,9 +43,7 @@ void	free_fd(int fd, t_fd **fd_info)
 {
 	t_fd	*curr;
 	t_fd	*node;
-	size_t	i;
 
-	i = -1;
 	if ((*fd_info)->fd == fd)
 	{
 		node = (*fd_info)->next;
@@ -66,8 +64,6 @@ void	free_fd(int fd, t_fd **fd_info)
 		curr = curr->next;
 		node = node->next;
 	}
-	new->next = NULL;
-	return (new);
 }
 
 void	free_line(t_line **line)
@@ -109,16 +105,16 @@ void	fill_reste(t_fd *fdinfo, t_line *line)
 	i = 0;
 	offset = ft_strchr(line->buf, '\n');
 	if (offset == -1)
-		while (fdinfo->reste[i])
+		while (fdinfo->reste[i] != '\0')
 			fdinfo->reste[i++] = '\0';
 	else
 	{
-		while (line->buf[offset + i + 1])
+		while (line->buf[offset + i + 1] != '\0')
 		{
 			fdinfo->reste[i] = line->buf[offset + i + 1];
 			i++;
 		}
-		while(fdinfo->reste[i])
+		while(fdinfo->reste[i] != '\0')
 			fdinfo->reste[i++] = '\0';
 	}
 }
