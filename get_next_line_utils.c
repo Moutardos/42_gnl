@@ -66,6 +66,8 @@ void	free_fd(int fd, t_fd **fd_info)
 		curr = curr->next;
 		node = node->next;
 	}
+	new->next = NULL;
+	return (new);
 }
 
 void	free_line(t_line **line)

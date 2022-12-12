@@ -46,8 +46,6 @@ typedef struct s_fd
 char	*get_next_line(int fd);
 t_line	*get_line(t_fd *fdinfo);
 t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize);
-// char	*malloc_line(t_list *filedata);
-// int		fill_lst(t_list **filedata, int fd);
 size_t	ft_strlcat(char *dst, const char *src, size_t size);
 char	*ft_strdup(const char *s);
 char	*make_real_line(t_fd *fdinfo, ssize_t size);
@@ -57,8 +55,6 @@ char	*make_real_line(t_fd *fdinfo, ssize_t size);
 t_fd	*get_new_fd(int fd, t_fd **fdinfo);
 void	free_fd(int fd, t_fd **fdinfo);
 void	free_line(t_line **line);
-// void	ft_lstclear(t_list **lst, void (*del)(void *));
-// void	ft_lstadd_back(t_list **lst, t_list *new);
 // /* return index of where character c is found*/
 ssize_t	ft_strchr(const char *s, int c);
 void	print_line(t_line *lst);
