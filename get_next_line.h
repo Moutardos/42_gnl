@@ -6,14 +6,14 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:19 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/08 23:30:03 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/12 01:18:10 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1000000
+#  define BUFFER_SIZE 1
 # endif
 # ifdef BUFFER_SIZE 
 #  if BUFFER_SIZE < 0
@@ -26,24 +26,37 @@
 # include <stdlib.h>
 # include <stdio.h>
 
-
-typedef struct s_list
+typedef struct s_line
 {
-	char	content[BUFFER_SIZE + 1];
-	struct s_list	*next;
-}	t_list;
+	ssize_t	size;
+	char	buf[BUFFER_SIZE + 1];
+	struct s_line	*next;
+}	t_line;
+
+typedef struct s_fd
+{
+	int			fd;
+	struct s_fd	*first;
+	char		reste[BUFFER_SIZE + 1];
+	t_line		*lines;
+	struct s_fd	*next;
+}	t_fd;
 
 /* return the next line in the fd file */
 char	*get_next_line(int fd);
-char	*malloc_line(t_list **filedata);
-int		fill_lst(t_list **filedata, int fd);
+t_line	*get_line(t_fd *fdinfo);
+t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize);
 size_t	ft_strlcat(char *dst, const char *src, size_t size);
-void	get_line(char *line, t_list **filedata);
+char	*ft_strdup(const char *s);
+char	*make_real_line(t_fd *fdinfo, ssize_t size);
 /** UTILS **/
-size_t  ft_strlen(const char *s);  
-t_list	*ft_lstnew(char *buff);
-void	ft_lstclear(t_list **lst, void (*del)(void *));
-void	ft_lstadd_back(t_list **lst, t_list *new);
-char	*ft_strchr(const char *s, int c);
-void    print_lst(t_list *lst);
+
+/* Actualise ou cree une nouvelle struct contenant la data du fd*/
+t_fd	*get_new_fd(int fd, t_fd **fdinfo);
+void	free_fd(int fd, t_fd **fdinfo);
+void	free_line(t_line **line);
+// /* return index of where character c is found*/
+ssize_t	ft_strchr(const char *s, int c);
+void	print_line(t_line *lst);
+void	fill_reste(t_fd *fdinfo, t_line *line);
 #endif

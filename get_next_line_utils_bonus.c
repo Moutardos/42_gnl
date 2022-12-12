@@ -6,55 +6,50 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:50:33 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/12 19:09:39 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/12 00:25:13 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-t_fd	*get_new_fd(int fd, t_fd **fdinfo)
+int	get_new_fd(int fd, t_fd **fdinfo)
 {
 	t_fd	*node;
-	ssize_t	i;
 
 	node = *fdinfo;
 	while(node)
 	{
 		if (node->fd == fd)
-			return (node);
+			return (1);
 		node = node->next;
 	}
-	node = malloc(sizeof(t_fd));
+	node = malloc(sizeof(t_fd ));
 	if (!node)
-		return (NULL);
-	i = -1;
-	while(node->reste[++i])
-			node->reste[i] = '\0';
+		return (0);
 	node->fd = fd;
 	if (!*fdinfo)
 		node->next = NULL;
 	else
 		node->next = *fdinfo;
 	*fdinfo = node;
-	return (node);
+	return (1);
 }
 
 void	free_fd(int fd, t_fd **fd_info)
 {
 	t_fd	*curr;
 	t_fd	*node;
-	size_t	i;
-
-	i = -1;
-	if ((*fd_info)->fd == fd)
+	
+	curr = *fd_info;
+	if (curr->fd == fd)
 	{
-		node = (*fd_info)->next;
-		free(*fd_info);
+		node = curr->next;
+		free(curr);
 		*fd_info = node;
 		return ;
 	}
-	node = *fd_info;
-	curr = node->next;
+	node = curr;
+	curr = curr->next;
 	while(curr)
 	{
 		if (curr->fd == fd)
@@ -66,8 +61,6 @@ void	free_fd(int fd, t_fd **fd_info)
 		curr = curr->next;
 		node = node->next;
 	}
-	new->next = NULL;
-	return (new);
 }
 
 void	free_line(t_line **line)
@@ -122,31 +115,27 @@ void	fill_reste(t_fd *fdinfo, t_line *line)
 			fdinfo->reste[i++] = '\0';
 	}
 }
-
+/*
 void	print_line(t_line *lst)
 {
-	ssize_t	i;
-	ssize_t	n;
+	size_t	i;
+	size_t	n;
 
 	i = 1;
 	while (lst)
 	{
 		n = 0;
-		write(1, "'", 1);
 		while(n < lst->size)
 		{
 			if (lst->buf[n] == '\n')
 				write(1, "\\n",2);
 			else
-			{
 				write(1, lst->buf + n, 1);
-			}
 			n++;
 		}
-		write(1, "'", 1);
 		lst = lst->next;
 		i++;
 		printf("\n");
 	}
 	printf("NULL\n");
-}
+}*/
