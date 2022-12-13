@@ -6,42 +6,34 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 06:59:27 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/12 21:40:06 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/13 07:32:31 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdlib.h>
-
 
 char	*get_next_line(int fd)
 {
-	static t_fd		*fdinfos = NULL;
+	static t_ffd	*fdinfos = NULL;
 	t_fd			*fdinfo;
 	char			*res;
 	ssize_t			size;
-	
-	fdinfo = NULL;
+
 	if (fd < 0)
+		return (NULL);
+	fdinfos = init_fdinfos(fdinfos);
+	if (!fdinfos)
 		return (NULL);
 	fdinfo = get_new_fd(fd, &fdinfos);
 	if (!fdinfo)
 		return (NULL);
 	fdinfo->lines = fill_lines(fdinfo, &size);
 	if (fdinfo->lines == NULL)
-	{
-		free_fd(fd, &fdinfo);
-		return (NULL);
-	}
+		return (free_fd(fd, &fdinfos), NULL);
 	if (size == 0)
-	{
-		free_line(&fdinfo->lines);
-		free_fd(fd, &fdinfo);
-		return (NULL);
-	}
+		return (free_fd(fd, &fdinfos), NULL);
 	res = make_real_line(fdinfo, size);
-	free_line(&fdinfo->lines);
-	return (res);
+	return (free_line(&fdinfo->lines), res);
 }
 
 t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize)
@@ -64,7 +56,9 @@ t_line	*fill_lines(t_fd *fdinfo, ssize_t *nsize)
 		}
 		*nsize += curr->size;
 		curr = curr->next;
-	} 
+	}
+	if (ft_strchr(curr->buf, '\n') != -1)
+		curr->size = ft_strchr(curr->buf, '\n') + 1;
 	*nsize += curr->size;
 	fill_reste(fdinfo, curr);
 	return (res);
@@ -76,30 +70,24 @@ t_line	*get_line(t_fd *fdinfo)
 	ssize_t	size;
 
 	res = malloc(sizeof(t_line));
-	res->next = NULL;
 	if (!res)
 		return (NULL);
-	size = -1;
-	if (fdinfo->reste[size + 1])
-		while (fdinfo->reste[++size])
+	res->next = NULL;
+	size = 0;
+	if (fdinfo->reste[size] != '\0')
+	{
+		while (fdinfo->reste[size] != '\0')
 		{
 			res->buf[size] = fdinfo->reste[size];
-			fdinfo->reste[size] = '\0';
-		}
-	else
-	{
-		size = read(fdinfo->fd, res->buf, BUFFER_SIZE);
-		if (size == -1)
-		{
-			free(res);
-			return (NULL);
+			fdinfo->reste[size++] = '\0';
 		}
 	}
-	res->buf[size] = '\0';
-	if (ft_strchr(res->buf, '\n') != -1)
-		res->size = ft_strchr(res ->buf, '\n') + 1;
 	else
-		res->size = size;
+		size = read(fdinfo->fd, res->buf, BUFFER_SIZE);
+	if (size == -1)
+		return (free(res), NULL);
+	res->buf[size] = '\0';
+	res->size = size;
 	return (res);
 }
 
@@ -109,7 +97,7 @@ char	*make_real_line(t_fd *fdinfo, ssize_t size)
 	t_line	*curr;
 	ssize_t	i;
 	ssize_t	len;
-	
+
 	curr = fdinfo->lines;
 	res = malloc(size + 1);
 	len = 0;
@@ -124,4 +112,20 @@ char	*make_real_line(t_fd *fdinfo, ssize_t size)
 	}
 	res[len] = '\0';
 	return (res);
+}
+
+t_ffd	*init_fdinfos(t_ffd *fdinfos)
+{
+	t_ffd	*new;
+
+	if (!fdinfos)
+	{
+		new = malloc(sizeof(t_ffd));
+		if (!new)
+			return (NULL);
+		new->first = NULL;
+	}
+	else
+		new = fdinfos;
+	return (new);
 }

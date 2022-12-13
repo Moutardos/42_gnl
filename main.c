@@ -6,7 +6,7 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:37:18 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/12 21:39:18 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/13 07:12:16 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	gnl(int fd, char *exp)
 	}
 	else if (strcmp(exp, res))
 	{
-		printf("MALAISE");
+		printf("MALAISE '%s'", res);
 	}
 	else
 	{
@@ -78,11 +78,16 @@ int	main(int ac, char **av)
 	/* 17 */ gnl(fd[3], "\n");
 	/* 18 */ gnl(1007, NULL);
 	/* 19 */ gnl(fd[3], NULL);
-	// int fd=open("allo",O_RDWR);
-	// buf = get_next_line(fd);
-	// printf("first line :%s", buf);
-	//  buf = get_next_line(fd);
-	//  printf("second line :%s", buf);
+	//  buf = get_next_line(1002);
+	//  free(buf);
+	// fd[0] =open("allo",O_RDWR);
+	// buf = get_next_line(fd[0]);
+	// free(buf);
+	// buf = get_next_line(fd[0]);
+	// free(buf);
+	// buf = get_next_line(fd[0]);
+	// free(buf);
+
 	// buf = get_next_line(fd);
 	// printf("third line :%s", buf);
 	// buf = get_next_line(fd);

@@ -6,19 +6,19 @@
 /*   By: lcozdenm <lcozdenm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 07:50:33 by lcozdenm          #+#    #+#             */
-/*   Updated: 2022/12/12 21:48:22 by lcozdenm         ###   ########.fr       */
+/*   Updated: 2022/12/12 23:49:33 by lcozdenm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-t_fd	*get_new_fd(int fd, t_fd **fdinfo)
+t_fd	*get_new_fd(int fd, t_ffd **fdinfo)
 {
 	t_fd	*node;
 	ssize_t	i;
 
-	node = *fdinfo;
-	while(node)
+	node = (*fdinfo)->first;
+	while (node)
 	{
 		if (node->fd == fd)
 			return (node);
@@ -31,37 +31,39 @@ t_fd	*get_new_fd(int fd, t_fd **fdinfo)
 	while (++i <= BUFFER_SIZE)
 		node->reste[i] = '\0';
 	node->fd = fd;
-	if (!*fdinfo)
+	if (!(*fdinfo)->first)
 		node->next = NULL;
 	else
-		node->next = *fdinfo;
-	*fdinfo = node;
+		node->next = (*fdinfo)->first;
+	(*fdinfo)->first = node;
 	return (node);
 }
 
-void	free_fd(int fd, t_fd **fd_info)
+void	free_fd(int fd, t_ffd **fd_infos)
 {
-	t_fd	*curr;
+	t_fd	*c;
 	t_fd	*node;
 
-	if ((*fd_info)->fd == fd)
+	c = (*fd_infos)->first;
+	if (c->fd == fd)
 	{
-		node = (*fd_info)->next;
-		free(*fd_info);
-		*fd_info = node;
-		return ;
-	}
-	node = *fd_info;
-	curr = node->next;
-	while(curr)
-	{
-		if (curr->fd == fd)
+		node = c->next;
+		if (node)
+			(*fd_infos)->first = node;
+		else
 		{
-			node->next = curr->next;
-			free(curr);
-			return ;
+			free(*fd_infos);
+			*fd_infos = NULL;
 		}
-		curr = curr->next;
+		return (free_line(&c->lines), free(c));
+	}
+	node = (*fd_infos)->first;
+	c = node->next;
+	while (c)
+	{
+		if (c->fd == fd)
+			return (node->next = c->next, free_line(&c->lines), free(c));
+		c = c->next;
 		node = node->next;
 	}
 }
@@ -114,35 +116,7 @@ void	fill_reste(t_fd *fdinfo, t_line *line)
 			fdinfo->reste[i] = line->buf[offset + i + 1];
 			i++;
 		}
-		while(fdinfo->reste[i] != '\0')
+		while (fdinfo->reste[i] != '\0')
 			fdinfo->reste[i++] = '\0';
 	}
-}
-
-void	print_line(t_line *lst)
-{
-	ssize_t	i;
-	ssize_t	n;
-
-	i = 1;
-	while (lst)
-	{
-		n = 0;
-		write(1, "'", 1);
-		while(n < lst->size)
-		{
-			if (lst->buf[n] == '\n')
-				write(1, "\\n",2);
-			else
-			{
-				write(1, lst->buf + n, 1);
-			}
-			n++;
-		}
-		write(1, "'", 1);
-		lst = lst->next;
-		i++;
-		printf("\n");
-	}
-	printf("NULL\n");
 }
